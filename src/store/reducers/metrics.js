@@ -8,15 +8,26 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_METRICS:
+      let newMetrics = [];
+      action.metrics.map(metric => {
+        newMetrics.push(metric);
+      });
       return {
         ...state,
+        allMetrics: newMetrics,
       };
 
     case SELECT_METRICS:
       let updatedMetrics = [];
-      action.metrics.map(metric => {
-        updatedMetrics.push(metric.value);
-      });
+
+      if (action.metrics) {
+        action.metrics.map(metric => {
+          updatedMetrics.push(metric.value);
+        });
+      } else {
+        updatedMetrics = [];
+      }
+
       return {
         ...state,
         selectedMetrics: updatedMetrics,

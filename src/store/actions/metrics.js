@@ -14,10 +14,9 @@ export const selectMetrics = error => {
   };
 };
 
-export const getMetrics = () => {
-  return dispatch => {
-    return {
-      type: GET_METRICS,
-    };
+export const getMetrics = metrics => {
+  return {
+    type: GET_METRICS,
+    metrics: metrics,
   };
 };

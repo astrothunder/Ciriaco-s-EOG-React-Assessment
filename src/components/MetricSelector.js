@@ -7,6 +7,7 @@ import { useQuery } from 'urql';
 import MetricCard from '../components/MetricCard';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Chart from './Chart';
 
 const query = `
     query {
@@ -26,48 +27,56 @@ const MetricSelector = () => {
 
   let options;
 
+  let metrics;
+
   if (data) {
     options = data.getMetrics.map(item => {
       return { value: item, label: item };
     });
-  }
 
-  const allMetrics = useSelector(state => state.metrics.allMetrics);
+    metrics = data.getMetrics;
+
+    dispatch({ type: 'GET_METRICS', metrics: metrics });
+  }
 
   const selectedMetrics = useSelector(state => state.metrics.selectedMetrics);
 
   return (
     <div className={classes.container}>
-      <Grid container justify="center" className={classes.topContainer}>
-        <Grid item xs={8} className={classes.metricCardsContainer}>
-          <Grid container direction="row">
-            {selectedMetrics &&
-              selectedMetrics.map(item => {
-                return (
+      <Grid container justify="center" direction="column" className={classes.topContainer}>
+        <h4 className={classes.selectorText}>Select a metric to visualize.</h4>
+        {fetching ? (
+          <CircularProgress color="secondary" />
+        ) : (
+          <div className={classes.selector}>
+            <Select
+              isMulti
+              closeMenuOnSelect={false}
+              options={options}
+              styles={colourStyles}
+              onChange={metrics => dispatch({ type: 'SELECT_METRICS', metrics: metrics })}
+            />
+          </div>
+        )}
+      </Grid>
+
+      {selectedMetrics.length !== 0 && (
+        <Grid container direction="column" className={classes.chartContainer}>
+          {selectedMetrics &&
+            selectedMetrics.map(item => {
+              return (
+                <Grid container direction="row" className={classes.metricCardChartContainer}>
                   <Grid item>
                     <MetricCard item={item} />
                   </Grid>
-                );
-              })}
-          </Grid>
+                  <Grid item>
+                    <Chart metricName={item} />
+                  </Grid>
+                </Grid>
+              );
+            })}
         </Grid>
-        <Grid item xs={4} className={classes.selectorContainer}>
-          <h4 className={classes.selectorText}>Select a metric to visualize.</h4>
-          {fetching ? (
-            <CircularProgress color="secondary" />
-          ) : (
-            <div>
-              <Select
-                isMulti
-                closeMenuOnSelect={false}
-                options={options}
-                styles={colourStyles}
-                onChange={metrics => dispatch({ type: 'SELECT_METRICS', metrics: metrics })}
-              />
-            </div>
-          )}
-        </Grid>
-      </Grid>
+      )}
     </div>
   );
 };
@@ -80,10 +89,15 @@ const useStyles = makeStyles({
   card: {
     margin: '5% 25%',
   },
+  chartContainer: {
+    paddingLeft: '20%',
+    paddingRight: '20%',
+  },
   selector: {},
   container: {},
   selectorContainer: {
-    padding: 50,
+    paddingRight: 100,
+    paddingTop: 100,
   },
   selectorText: {
     color: 'white',
@@ -94,7 +108,10 @@ const useStyles = makeStyles({
     padding: 40,
   },
   topContainer: {
-    flexGrow: 1,
+    padding: 50,
+  },
+  metricCardChartContainer: {
+    padding: 30,
   },
 });
 

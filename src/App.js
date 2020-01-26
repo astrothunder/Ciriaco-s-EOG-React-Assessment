@@ -9,6 +9,7 @@ import Wrapper from './components/Wrapper';
 import Metrics from './Features/Metrics/Metric';
 import MetricSelector from './components/MetricSelector';
 import configureStore from './store/configureStore';
+import Chart from './components/Chart';
 
 const store = configureStore();
 

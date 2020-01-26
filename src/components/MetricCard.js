@@ -9,15 +9,12 @@ import Grid from '@material-ui/core/Grid';
 import { useQuery } from 'urql';
 
 const query = `
-query($input: [MeasurementQuery]) {
-  getMultipleMeasurements(input: $input) {
+query($metricName: String!) {
+  getLastKnownMeasurement(metricName: $metricName ){
     metric
-    measurements {
-      at
-      value
-      metric
-      unit
-    }
+    value
+    at
+    unit
   }
 }
 `;
@@ -27,11 +24,18 @@ export default function MetricCard(props) {
 
   const [res] = useQuery({
     query: query,
+    variables: { metricName: props.item },
+    requestPolicy: 'network-only',
+    pollInterval: 500,
   });
 
   const { fetching, data, error } = res;
 
-  console.log(data);
+  let value;
+
+  if (data) {
+    value = data.getLastKnownMeasurement.value;
+  }
 
   return (
     <Card className={classes.card}>
@@ -44,7 +48,7 @@ export default function MetricCard(props) {
           </Grid>
           <Grid item xs={12} className={classes.valueContainer}>
             <Typography className={classes.value} color="textSecondary">
-              168.78
+              {value}
             </Typography>
           </Grid>
         </Grid>
@@ -60,12 +64,12 @@ const useStyles = makeStyles({
     backgroundColor: '#413F54',
   },
   title: {
-    fontSize: 28,
+    fontSize: 20,
     color: 'white',
     fontWeight: 'bold',
   },
   value: {
-    fontSize: 66,
+    fontSize: 46,
     color: 'white',
     fontWeight: 'bold',
   },
