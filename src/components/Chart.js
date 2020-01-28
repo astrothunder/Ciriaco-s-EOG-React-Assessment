@@ -1,114 +1,114 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch, useSelector } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import { useQuery } from 'urql';
-import { Chart } from 'react-charts';
+import { useSelector } from 'react-redux';
 
-const query = `
-query($input: [MeasurementQuery]) {
-  getMultipleMeasurements(input: $input) {
-    metric
-    measurements {
-      at
-      value
-      metric
-      unit
-    }
-  }
-}
-`;
-
-const query2 = `
-query($metricName: String!) {
-  getLastKnownMeasurement(metricName: $metricName ){
-    metric
-    value
-    at
-    unit
-  }
-}
-`;
-
-// Calculating 30 min chart history to populate chart.
-
-const thirtyMinHistory = new Date() - 30 * 60 * 1000;
+import Chart from 'react-apexcharts';
 
 export default function ChartContainer(props) {
-  const metricName = props.metricName;
+  const selectedMetrics = useSelector(state => state.metrics.selectedMetrics);
+
+  const metricHistory = useSelector(state => state.metrics.metricHistory);
 
   const classes = useStyles();
 
-  const queryResult = useQuery(
-    {
-      query,
-      variables: {
-        input: {
-          metricName,
-          after: thirtyMinHistory,
-        },
-      },
-    },
-    metricName,
-  );
-
-  let dataChart = [
-    {
-      label: 'Series 1',
-      data: [{ x: 1, y: 10 }, { x: 2, y: 10 }, { x: 3, y: 10 }],
-    },
-  ];
-
-  let newData = [];
-
-  if (queryResult[0].data) {
-    let data = queryResult[0].data.getMultipleMeasurements[0].measurements;
-
-    newData = [];
-
-    data.map(obj => {
-      newData.push({ x: obj.at, y: obj.value });
-    });
-
-    dataChart = [
-      {
-        label: `${metricName}`,
-        data: newData,
-      },
-    ];
-  }
-
-  const [res] = useQuery({
-    query: query2,
-    variables: { metricName: metricName },
-    requestPolicy: 'network-only',
-    pollInterval: 500,
+  const series = selectedMetrics.map(metric => {
+    return {
+      name: `${metric}`,
+      type: 'line',
+      data: metricHistory[metric],
+    };
   });
 
-  const { fetching, data, error } = res;
-
-  if (data) {
-    if (data.getLastKnownMeasurement) {
-      newData.push({ x: data.getLastKnownMeasurement.at, y: data.getLastKnownMeasurement.value });
-    }
-
-    dataChart = [
+  const options = {
+    chart: {
+      height: 350,
+      type: 'line',
+      stacked: false,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      width: [1, 1, 4],
+    },
+    title: {
+      text: 'Metric Visualization',
+      align: 'left',
+      offsetX: 110,
+    },
+    xaxis: {
+      type: 'datetime',
+    },
+    yaxis: [
       {
-        label: `${metricName}`,
-        data: newData,
+        axisTicks: {
+          show: true,
+        },
+        axisBorder: {
+          show: true,
+          color: '#008FFB',
+        },
+        labels: {
+          style: {
+            color: '#008FFB',
+          },
+        },
+        title: {
+          text: 'Income (thousand crores)',
+          style: {
+            color: '#008FFB',
+          },
+        },
+        tooltip: {
+          enabled: true,
+        },
       },
-    ];
-  }
-
-  const axes = [{ primary: true, type: 'time', position: 'bottom' }, { type: 'linear', position: 'left' }];
+      selectedMetrics.map(metric => {
+        return {
+          seriesName: `${metric}`,
+          opposite: true,
+          axisTicks: {
+            show: true,
+          },
+          axisBorder: {
+            show: true,
+            color: '#00E396',
+          },
+          labels: {
+            style: {
+              color: '#00E396',
+            },
+          },
+          title: {
+            text: `${metric}`,
+            style: {
+              color: '#00E396',
+            },
+          },
+        };
+      }),
+    ],
+    tooltip: {
+      fixed: {
+        enabled: true,
+        position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+        offsetY: 30,
+        offsetX: 60,
+      },
+    },
+    legend: {
+      horizontalAlign: 'left',
+      offsetX: 40,
+    },
+  };
 
   return (
     <div className={classes.container}>
-      {queryResult[0].data && <Chart data={dataChart} axes={axes} tooltip primaryCursor secondaryCursor />}
+      {selectedMetrics.length !== 0 && <Chart options={options} series={series} type="line" height={350} />}
     </div>
   );
 }
 
 const useStyles = makeStyles({
-  container: { height: 500, width: 700 },
+  container: { width: '100%' },
 });

@@ -1,12 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { useQuery } from 'urql';
+import { useDispatch } from 'react-redux';
 
 const query = `
 query($metricName: String!) {
@@ -22,6 +21,8 @@ query($metricName: String!) {
 export default function MetricCard(props) {
   const classes = useStyles();
 
+  const dispatch = useDispatch();
+
   const [res] = useQuery({
     query: query,
     variables: { metricName: props.item },
@@ -29,12 +30,14 @@ export default function MetricCard(props) {
     pollInterval: 500,
   });
 
-  const { fetching, data, error } = res;
+  const { data } = res;
 
   let value;
 
   if (data) {
     value = data.getLastKnownMeasurement.value;
+
+    dispatch({ type: 'UPDATE_HISTORY', metric: props.item, value: value });
   }
 
   return (

@@ -4,12 +4,11 @@ import { ToastContainer } from 'react-toastify';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
-import Header from './components/Header';
 import Wrapper from './components/Wrapper';
-import Metrics from './Features/Metrics/Metric';
 import MetricSelector from './components/MetricSelector';
 import configureStore from './store/configureStore';
 import Chart from './components/Chart';
+import Header from './components/Header.js';
 
 const store = configureStore();
 
@@ -34,6 +33,7 @@ const App = () => (
       <Wrapper>
         <Header />
         <MetricSelector />
+        <Chart />
         <ToastContainer />
       </Wrapper>
     </Provider>

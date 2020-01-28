@@ -1,13 +1,12 @@
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/styles';
 import Select from 'react-select';
 import { useSelector, useDispatch } from 'react-redux';
-import { getMetrics, selectMetrics } from '../store/actions/index';
+
 import { useQuery } from 'urql';
 import MetricCard from '../components/MetricCard';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Chart from './Chart';
 
 const query = `
     query {
@@ -23,7 +22,7 @@ const MetricSelector = () => {
     query: query,
   });
 
-  const { fetching, data, error } = res;
+  const { fetching, data } = res;
 
   let options;
 
@@ -60,18 +59,13 @@ const MetricSelector = () => {
         )}
       </Grid>
 
-      {selectedMetrics.length !== 0 && (
-        <Grid container direction="column" className={classes.chartContainer}>
+      {selectedMetrics.length !== 0 && selectedMetrics.length !== 0 && (
+        <Grid container direction="row" className={classes.chartContainer}>
           {selectedMetrics &&
             selectedMetrics.map(item => {
               return (
-                <Grid container direction="row" className={classes.metricCardChartContainer}>
-                  <Grid item>
-                    <MetricCard item={item} />
-                  </Grid>
-                  <Grid item>
-                    <Chart metricName={item} />
-                  </Grid>
+                <Grid item key={item}>
+                  <MetricCard item={item} />
                 </Grid>
               );
             })}
