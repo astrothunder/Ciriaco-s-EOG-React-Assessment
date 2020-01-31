@@ -35,10 +35,18 @@ const MetricSelector = () => {
 
   const selectedMetrics = useSelector(state => state.metrics.selectedMetrics);
 
+  const handleSelectMetric = metric => {
+    console.log(metric);
+
+    // dispatch({ type: 'SELECT_METRICS', metric: metric });
+  };
+
+  
+
   return (
     <div className={classes.container}>
       <h2 style={{ textAlign: 'center', fontWeight: 400, fontFamily: 'Roboto' }}>Click on a metric to activate it.</h2>
-      <Grid container direction="row" justify="center">
+      <Grid container direction="row" justify="center" alignItems="center">
         {fetching ? (
           <CircularProgress color="inherit" />
         ) : (
@@ -47,7 +55,7 @@ const MetricSelector = () => {
               return (
                 <Grid key={metric} item>
                   <Fade in={true}>
-                    <Metric metric={metric} />
+                    <Metric metric={metric} selectMetric={handleSelectMetric} />
                   </Fade>
                 </Grid>
               );

@@ -4,6 +4,7 @@ import {
   METRIC_API_ERROR_RECEIVED,
   GET_MULTIPLE_MEASUREMENTS,
   UPDATE_HISTORY,
+  UNSELECT_METRICS,
 } from './actionTypes';
 import { useQuery } from 'urql';
 
@@ -21,17 +22,25 @@ export const getMultipleMeasurements = data => {
   };
 };
 
-export const updateHistory = (metric, value) => {
+export const updateHistory = (metric, measurement) => {
   return {
     type: UPDATE_HISTORY,
     metric: metric,
-    value: value,
+    measurement: measurement,
   };
 };
 
-export const selectMetrics = error => {
+export const selectMetrics = metric => {
   return {
     type: SELECT_METRICS,
+    metric: metric,
+  };
+};
+
+export const unselectMetrics = metric => {
+  return {
+    type: UNSELECT_METRICS,
+    metric: metric,
   };
 };
 

@@ -1,1 +1,1 @@
-export { getMetrics, selectMetrics } from './metrics';
+export { getMetrics, selectMetrics, unselectMetrics } from './metrics';

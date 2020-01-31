@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { useQuery } from 'urql';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import Grid from '@material-ui/core/Grid';
 
 const query = `
     query($input: [MeasurementQuery]) {
@@ -61,72 +62,39 @@ export default function ChartContainer(props) {
 
   const classes = useStyles();
 
-  console.log(metricHistory);
-
   if (metricHistory.length === 0) {
     return null;
   }
 
-  const data = [
-    {
-      name: 'Page A',
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Page B',
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Page C',
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: 'Page D',
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'Page E',
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Page F',
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Page G',
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  console.log(selectedMetrics);
+
+  let series = [];
+
+  selectedMetrics.map(metric => {
+    series.push({
+      name: `${metric}`,
+      data: metricHistory[metric],
+    });
+    return true;
+  });
 
   return (
-    <div className={classes.container}>
-      <LineChart width={1000} height={400} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="pv" stroke="#8884d8" />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    </div>
+    <Grid container direction="row" justify="center" className={classes.container}>
+      <Grid item>
+        <LineChart width={1200} height={500} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <XAxis dataKey="time" allowDuplicatedCategory={false} />
+          <YAxis dataKey="value" />
+          <Tooltip />
+          <Legend />
+          {series.map(s => (
+            <Line type="monotone" dataKey="value" data={s.data} name={s.name} key={s.name} dot={null} />
+          ))}
+        </LineChart>
+      </Grid>
+    </Grid>
   );
 }
 
 const useStyles = makeStyles({
-  container: { width: '100%', padding: '15px' },
+  container: { paddingTop: '50px' },
 });

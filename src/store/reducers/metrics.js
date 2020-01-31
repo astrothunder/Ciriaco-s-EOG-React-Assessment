@@ -1,4 +1,10 @@
-import { GET_METRICS, SELECT_METRICS, GET_MULTIPLE_MEASUREMENTS, UPDATE_HISTORY } from '../actions/actionTypes';
+import {
+  GET_METRICS,
+  SELECT_METRICS,
+  GET_MULTIPLE_MEASUREMENTS,
+  UPDATE_HISTORY,
+  UNSELECT_METRICS,
+} from '../actions/actionTypes';
 
 const initialState = {
   selectedMetrics: [],
@@ -21,24 +27,34 @@ const reducer = (state = initialState, action) => {
       };
     case UPDATE_HISTORY:
       let metricName = action.metric;
-      let value = action.value;
+      let measurement = action.measurement;
 
       let updatedHistory = state.metricHistory;
 
       let newData = updatedHistory[metricName];
 
-      newData.push(value);
+      if (newData) {
+        let time = new Date(measurement.at);
+        time = time.toLocaleTimeString(navigator.language, {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        newData.push({ time: time, value: measurement.value });
 
-      updatedHistory[metricName] = newData;
+        updatedHistory[metricName] = newData;
+
+        return {
+          ...state,
+
+          metricHistory: updatedHistory,
+        };
+      }
 
       return {
         ...state,
-        metricHistory: updatedHistory,
       };
     case GET_MULTIPLE_MEASUREMENTS:
       let data = action.data;
-
-      console.log(data);
 
       let history = {};
 
@@ -46,7 +62,14 @@ const reducer = (state = initialState, action) => {
         let data = [];
         if (obj.measurements) {
           obj.measurements.map(obj => {
-            data.push({ x: new Date(obj.at), y: obj.value });
+            let time = new Date(obj.at);
+            time = time.toLocaleTimeString(navigator.language, {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+
+            console.log(time);
+            data.push({ time: time, value: obj.value });
             return true;
           });
 
@@ -66,19 +89,22 @@ const reducer = (state = initialState, action) => {
       };
 
     case SELECT_METRICS:
-      let updatedMetrics = [];
+      let updatedMetrics = [...state.selectedMetrics];
 
-      if (action.metrics) {
-        action.metrics.map(metric => {
-          return updatedMetrics.push(metric.value);
-        });
-      } else {
-        updatedMetrics = [];
-      }
+      updatedMetrics.push(action.metric);
 
       return {
         ...state,
         selectedMetrics: updatedMetrics,
+      };
+    case UNSELECT_METRICS:
+      let oldMetrics = [...state.selectedMetrics];
+
+      let unselectOldMetrics = oldMetrics.filter(metric => metric !== action.metric);
+
+      return {
+        ...state,
+        selectedMetrics: unselectOldMetrics,
       };
 
     default:
