@@ -1,9 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import Select from 'react-select';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useQuery } from 'urql';
-import MetricCard from '../components/MetricCard';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Metric from './Metric';
@@ -24,7 +22,7 @@ const MetricSelector = () => {
     query: query,
   });
 
-  const { fetching, data, error } = res;
+  const { fetching, data } = res;
 
   let metrics;
 
@@ -33,15 +31,11 @@ const MetricSelector = () => {
     dispatch({ type: 'GET_METRICS', metrics: metrics });
   }
 
-  const selectedMetrics = useSelector(state => state.metrics.selectedMetrics);
-
   const handleSelectMetric = metric => {
     console.log(metric);
 
     // dispatch({ type: 'SELECT_METRICS', metric: metric });
   };
-
-  
 
   return (
     <div className={classes.container}>

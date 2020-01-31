@@ -78,16 +78,27 @@ export default function ChartContainer(props) {
     return true;
   });
 
+  selectedMetrics.map((metric, i) => {
+    console.log(metric, i);
+    console.log(metricHistory[metric][0].unit);
+    return true;
+  });
+
   return (
     <Grid container direction="row" justify="center" className={classes.container}>
       <Grid item>
         <LineChart width={1200} height={500} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <XAxis dataKey="time" allowDuplicatedCategory={false} />
-          <YAxis dataKey="value" />
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="time" allowDataOverflow={true} allowDuplicatedCategory={false} />
+          {selectedMetrics.map((metric, i) => {
+            return (
+              <YAxis yAxisId={i} dataKey="value" type="number" label={metricHistory[metric][0].unit} name={metric} />
+            );
+          })}
           <Tooltip />
           <Legend />
           {series.map(s => (
-            <Line type="monotone" dataKey="value" data={s.data} name={s.name} key={s.name} dot={null} />
+            <Line dataKey="value" type="monotone" data={s.data} key={s.name} dot={false} />
           ))}
         </LineChart>
       </Grid>

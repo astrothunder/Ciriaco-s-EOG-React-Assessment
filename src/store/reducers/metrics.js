@@ -39,7 +39,7 @@ const reducer = (state = initialState, action) => {
           hour: '2-digit',
           minute: '2-digit',
         });
-        newData.push({ time: time, value: measurement.value });
+        newData.push({ time: time, value: measurement.value, unit: measurement.unit });
 
         updatedHistory[metricName] = newData;
 
@@ -69,7 +69,7 @@ const reducer = (state = initialState, action) => {
             });
 
             console.log(time);
-            data.push({ time: time, value: obj.value });
+            data.push({ time: time, value: obj.value, unit: obj.unit });
             return true;
           });
 
