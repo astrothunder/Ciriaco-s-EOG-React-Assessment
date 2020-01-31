@@ -8,7 +8,6 @@ import Wrapper from './components/Wrapper';
 import MetricSelector from './components/MetricSelector';
 import configureStore from './store/configureStore';
 import Chart from './components/Chart';
-import Header from './components/Header.js';
 
 const store = configureStore();
 
@@ -31,7 +30,6 @@ const App = () => (
     <CssBaseline />
     <Provider store={store}>
       <Wrapper>
-        <Header />
         <MetricSelector />
         <Chart />
         <ToastContainer />

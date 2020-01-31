@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -20,6 +21,8 @@ query($metricName: String!) {
 export default function MetricCard(props) {
   const classes = useStyles();
 
+  const dispatch = useDispatch();
+
   const [res] = useQuery({
     query: query,
     variables: { metricName: props.item },
@@ -33,6 +36,8 @@ export default function MetricCard(props) {
 
   if (data) {
     value = data.getLastKnownMeasurement.value;
+
+    dispatch({ type: 'UPDATE_HISTORY', metric: props.item, value: value });
   }
 
   return (

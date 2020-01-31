@@ -36,7 +36,9 @@ const reducer = (state = initialState, action) => {
         metricHistory: updatedHistory,
       };
     case GET_MULTIPLE_MEASUREMENTS:
-      let data = action.data.getMultipleMeasurements;
+      let data = action.data;
+
+      console.log(data);
 
       let history = {};
 
