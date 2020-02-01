@@ -33,6 +33,7 @@ const App = () => (
       <Wrapper>
         <MetricSubscriber />
         <MetricSelector />
+
         <Chart />
         <ToastContainer />
       </Wrapper>

@@ -34,12 +34,7 @@ const reducer = (state = initialState, action) => {
       let newData = updatedHistory[metricName];
 
       if (newData) {
-        let time = new Date(measurement.at);
-        time = time.toLocaleTimeString(navigator.language, {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        newData.push({ time: time, value: measurement.value, unit: measurement.unit });
+        newData.push({ time: measurement.at, value: measurement.value, unit: measurement.unit });
 
         updatedHistory[metricName] = newData;
 
@@ -62,14 +57,7 @@ const reducer = (state = initialState, action) => {
         let data = [];
         if (obj.measurements) {
           obj.measurements.map(obj => {
-            let time = new Date(obj.at);
-            time = time.toLocaleTimeString(navigator.language, {
-              hour: '2-digit',
-              minute: '2-digit',
-            });
-
-            console.log(time);
-            data.push({ time: time, value: obj.value, unit: obj.unit });
+            data.push({ time: obj.at, value: obj.value, unit: obj.unit });
             return true;
           });
 
